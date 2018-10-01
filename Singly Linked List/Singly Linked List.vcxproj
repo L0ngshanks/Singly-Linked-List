@@ -117,6 +117,9 @@
   <ItemGroup>
     <ClInclude Include="SLList.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DTSLab3.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

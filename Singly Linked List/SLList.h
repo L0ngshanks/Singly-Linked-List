@@ -4,12 +4,6 @@
 template<typename Type> class SLLIter;
 
 //Struct Node of Type
-template<typename Type>
-struct Node
-{
-	Type* element;
-	Node* next;
-};
 
 // class SLList
 template<typename Type> class SLList
@@ -18,16 +12,30 @@ template<typename Type> class SLList
 	friend class SLLIter<Type>;
 
 	// add members/methods here…
-	//Create head
-	typename SLList<Type>::Node* head;
+	struct Node
+	{
+		Type element;
+		Node* next;
+	};
 
+	void recur(Node* spot)
+	{
+		if (spot != nullptr)
+			return;
+
+		recur(spot->next);
+		addHead(spot->element);
+	}
+
+	Node* head = 0;
+	unsigned int count;
+public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Function : Constructor
 	// Notes : constructs an empty list
 	/////////////////////////////////////////////////////////////////////////////
 	SLList()
 	{
-		typename SLList<Type>::Node * c;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -36,7 +44,7 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	~SLList()
 	{
-
+		clear();
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -44,10 +52,13 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	SLList<Type>& operator=(const SLList<Type>& that)
 	{
-		if (this != that)
+		if (this != &that)
 		{
-			
+			clear();
+			recur(that.head);
 		}
+
+		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -55,7 +66,7 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	SLList(const SLList<Type>& that)
 	{
-
+		*this = that;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -64,7 +75,12 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	void addHead(const Type& v)
 	{
+		typename SLList<Type>::Node* temp = new Node;
+		temp->element = v;
+		temp->next = head;
+		head = temp;
 
+		count++;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -73,7 +89,9 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	void clear()
 	{
-
+			Node* temp = head->next;
+			delete head;
+			head = temp;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -84,7 +102,10 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	void insert(SLLIter<Type>& index, const Type& v)
 	{
-
+		Node* temp = new Node*;
+		temp->next = index.iterator->next;
+		temp->element = v;
+		index.iterator->next = temp;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -94,7 +115,18 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	void remove(SLLIter<Type>& index)
 	{
+		if (index.iterator == nullptr)
+			return;
+		Node* del = index.iterator;
 
+		//Node* temp = index.iterator;
+		if (index.iterator != head)
+			index.prev->next = index.iterator->next;
+		else
+			head = head->next;
+		index.iterator = index.iterator->next;
+		//index.prev->next = temp;
+		delete del;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -103,7 +135,7 @@ template<typename Type> class SLList
 	/////////////////////////////////////////////////////////////////////////////
 	inline unsigned int size() const
 	{
-
+		return count;
 	}
 };
 
@@ -114,13 +146,20 @@ template<typename Type> class SLLIter
 	friend class SLList<Type>;
 
 	// add members/methods here…
+
+	typename SLList<Type>::Node* iterator;
+	typename SLList<Type>::Node* prev;
+	typename SLList<Type>* originalList;
+
+public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Function : Constructor
 	// Parameters :	listToIterate - the list to iterate
 	/////////////////////////////////////////////////////////////////////////////
 	SLLIter(SLList<Type>& listToIterate)
 	{
-
+		originalList = &listToIterate;
+		begin();
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -129,7 +168,8 @@ template<typename Type> class SLLIter
 	/////////////////////////////////////////////////////////////////////////////
 	void begin()
 	{
-
+		prev = 0;
+		iterator = originalList->head;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -138,7 +178,10 @@ template<typename Type> class SLLIter
 	/////////////////////////////////////////////////////////////////////////////
 	bool end() const
 	{
+		if (iterator != nullptr)
+			return false;
 
+		return true;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -147,7 +190,13 @@ template<typename Type> class SLLIter
 	/////////////////////////////////////////////////////////////////////////////
 	SLLIter<Type>& operator++()
 	{
+		if (iterator)
+		{
+			prev = iterator;
+			iterator = iterator->next;
+		}
 
+		return *this;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -156,7 +205,7 @@ template<typename Type> class SLLIter
 	/////////////////////////////////////////////////////////////////////////////
 	Type& current() const
 	{
-
+		return iterator->element;
 	}
 };
 

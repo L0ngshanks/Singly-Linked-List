@@ -20,9 +20,8 @@ template<typename Type> class SLList
 
 	void recur(Node* spot)
 	{
-		if (spot != nullptr)
+		if (spot == nullptr)
 			return;
-
 		recur(spot->next);
 		addHead(spot->element);
 	}
@@ -89,9 +88,15 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	void clear()
 	{
-			Node* temp = head->next;
-			delete head;
-			head = temp;
+		Node* temp;
+		while(head != nullptr)
+		{
+			temp = head;
+			head = head->next;
+			delete temp;
+		}
+		head = nullptr;
+		count = 0;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -102,10 +107,17 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	void insert(SLLIter<Type>& index, const Type& v)
 	{
-		Node* temp = new Node*;
-		temp->next = index.iterator->next;
+		if (index.iterator == nullptr)
+			return;
+		typename SLList<Type>::Node* temp = new Node;
+		temp->next = index.iterator;
+		if (index.prev != nullptr)
+			index.prev->next = temp;
 		temp->element = v;
-		index.iterator->next = temp;
+		if(index.iterator == head)
+			head = temp;
+		index.iterator = temp;
+		count++;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -127,6 +139,7 @@ public:
 		index.iterator = index.iterator->next;
 		//index.prev->next = temp;
 		delete del;
+		count--;
 	}
 
 	/////////////////////////////////////////////////////////////////////////////

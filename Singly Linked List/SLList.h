@@ -18,6 +18,14 @@ template<typename Type> class SLList
 		Node* next;
 	};
 
+	Node* head = 0;
+	unsigned int count;
+
+	/////////////////////////////////////////////////////////////////////////////
+	// Recursion for operator assignment
+	// iterate through the List
+	// Build list as the recursion unrolls
+	/////////////////////////////////////////////////////////////////////////////
 	void recur(Node* spot)
 	{
 		if (spot == nullptr)
@@ -26,8 +34,6 @@ template<typename Type> class SLList
 		addHead(spot->element);
 	}
 
-	Node* head = 0;
-	unsigned int count;
 public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Function : Constructor
@@ -129,6 +135,7 @@ public:
 	{
 		if (index.iterator == nullptr)
 			return;
+
 		Node* del = index.iterator;
 
 		//Node* temp = index.iterator;
